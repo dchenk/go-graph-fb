@@ -16,15 +16,15 @@ import (
 )
 
 type GraphResponseMe struct {
-	Id    string       `json:"id"`   // numeric string
-	Name  string       `json:"name"` // Set by default when no "fields" parameters are set.
+	ID    string       `json:"id"`
+	Name  string       `json:"name"`
 	Email string       `json:"email"`
 	Error *ErrResponse `json:"error"`
 }
 
 type GraphResponsePage struct {
 	Data struct {
-		Id      string `json:"id"` // numeric string
+		ID      string `json:"id"` // numeric string
 		Name    string `json:"name"`
 		Article string `json:"article"`
 		Type    string `json:"type"`
@@ -33,12 +33,12 @@ type GraphResponsePage struct {
 	Error  *ErrResponse `json:"error"`
 }
 
-// The WebhookNotif type is a generic format for webhook notification payloads.
-// https://developers.facebook.com/docs/graph-api/webhooks
+// A WebhookNotif represents any webhook notification payload.
+// Info https://developers.facebook.com/docs/graph-api/webhooks
 type WebhookNotif struct {
 	Object string `json:"object"` // enum{user, page, permissions, payments}
 	Entry  []struct {
-		Id            string   `json:"id"`
+		ID            string   `json:"id"`
 		ChangedFields []string `json:"changed_fields"` // Fields include, e.g., for Page "leadgen", "location", "messages", etc.
 		Changes       []struct {
 			Field string          `json:"field"`
@@ -48,7 +48,7 @@ type WebhookNotif struct {
 	} `json:"entry"`
 }
 
-// A LeadGenEntry is a Page webhook notification for the field "leadgen".
+// A LeadGenEntry is a Page webhook notification value for the field "leadgen".
 type LeadGenEntry struct {
 	AdID        string `json:"ad_id"`
 	FormID      string `json:"form_id"`
@@ -56,43 +56,6 @@ type LeadGenEntry struct {
 	PageID      string `json:"page_id"`
 	AdgroupID   string `json:"adgroup_id"`
 	CreatedTime int64  `json:"created_time"`
-}
-
-// https://developers.facebook.com/docs/graph-api/reference/v2.12/debug_token
-// Example:
-//	"data": {
-//		"app_id": "12345",
-//		"type": "USER",
-//		"application": "The App Name",
-//		"expires_at": 0,
-//		"is_valid": true,
-//		"issued_at": 1518807474,
-//		"scopes": [
-//			"read_insights",
-//			"publish_actions",
-//			"manage_pages",
-//			"pages_show_list",
-//			"ads_management",
-//			"ads_read",
-//			"business_management"
-//		],
-//		"user_id": "23456"
-//	}
-type TokenDebug struct {
-	Data struct {
-		IsValid     bool     `json:"is_valid"`
-		AppID       string   `json:"app_id"`
-		Application string   `json:"application"`
-		Type        string   `json:"type"`
-		IssuedAt    int64    `json:"issued_at"`
-		ExpiresAt   int64    `json:"expires_at"`
-		Scopes      []string `json:"scopes"`
-		Error       struct { // Empty if no error.
-			Code    int64  `json:"code"`
-			Message string `json:"message"`
-		} `json:"error"`
-	}
-	Error *ErrResponse `json:"error"`
 }
 
 type CursorPaging struct {
@@ -157,14 +120,6 @@ func (er *ErrResponse) fill(m map[string]interface{}) {
 
 func (er *ErrResponse) Error() string {
 	return fmt.Sprintf("fb: error code %d, subcode %d; msg: %s", er.Code, er.ErrorSubcode, er.Message)
-}
-
-func GetUserAccessToken() {
-
-}
-
-func GetPageAccessToken() {
-
 }
 
 // ReqSetup sets up a request to the Facebook API but does not begin it.

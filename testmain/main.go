@@ -11,7 +11,7 @@ import (
 func main() {
 
 	if len(os.Args) < 3 {
-		log.Println("Missing the function and/or access-token arguments!")
+		log.Println("Missing the function and/or access-token arguments: give function key first, then token.")
 		return
 	}
 
@@ -39,19 +39,18 @@ func me(accessToken string) {
 	}
 
 	me := new(fb.GraphResponseMe)
-	err = fb.ReadResponse(resp, me)
-	if err != nil {
+	if err := fb.ReadResponse(resp, me); err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println("Request went through good!")
-	fmt.Printf("%+v \n", me)
+	fmt.Printf("%+v \n", *me)
 
 }
 
 func mePost(accessToken string) {
 
-	resp, err := fb.Req("POST", "me", accessToken, nil, &fb.ParamStrStr{"method", "GET"})
+	resp, err := fb.Req("POST", "me", accessToken, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,6 +62,6 @@ func mePost(accessToken string) {
 	}
 
 	fmt.Println("Request went through good!")
-	fmt.Printf("%+v \n", me)
+	fmt.Printf("%+v \n", *me)
 
 }
