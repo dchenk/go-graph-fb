@@ -93,6 +93,11 @@ type ErrResponse struct {
 	FbTraceID        string `json:"fbtrace_id"`
 }
 
+func IsErrResponse(err error) (v bool) {
+	_, v = err.(*ErrResponse)
+	return
+}
+
 // FillFromMap fills out the struct from the map extracted out of the JSON response sent by the Facebook API.
 func (er *ErrResponse) fill(m map[string]interface{}) {
 	if v, ok := m["message"].(string); ok {
@@ -130,7 +135,7 @@ func ReqSetup(method, nodeEdge string, accessToken string, fields []string, para
 		URL: &url.URL{
 			Scheme: "https",
 			Host:   "graph.facebook.com",
-			Path:   "/v2.11/" + nodeEdge,
+			Path:   "/v2.12/" + nodeEdge,
 		},
 		Proto:      "HTTP/1.1",
 		ProtoMajor: 1,
