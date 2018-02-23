@@ -10,11 +10,17 @@ import (
 
 // CreateSystemTokenReq sets up an http.Request for getting a system user token.
 // Info: https://developers.facebook.com/docs/marketing-api/businessmanager/systemuser/#systemusertoken
-func CreateSystemTokenReq(userToken, appSecretProof, appID string, scope []string) *http.Request {
-	return ReqSetup("GET", "", userToken, nil,
+func CreateSystemTokenReq(userToken, systemUserID, appSecretProof, appID string, scope []string) *http.Request {
+	return ReqSetup("POST", systemUserID+"/access_tokens", userToken, nil,
 		&ParamStrStr{"business_app", appID},
 		&ParamStrStr{"appsecret_proof", appSecretProof},
 		&ParamStrStr{"scope", strings.Join(scope, ",")})
+}
+
+// A SystemToken is the format in which Facebook returns a system user token.
+type SystemToken struct {
+	AccessToken string       `json:"access_token"`
+	Error       *ErrResponse `json:"error"` // nil if no error is given by FB
 }
 
 // A TokenDebug represents a Facebook response for the token debugging API.
