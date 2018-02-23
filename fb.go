@@ -93,9 +93,10 @@ type ErrResponse struct {
 	FbTraceID        string `json:"fbtrace_id"`
 }
 
-func IsErrResponse(err error) (v bool) {
-	_, v = err.(*ErrResponse)
-	return
+// IsErrResponse says if the error is of type *ErrResponse, which Facebook can send as part of a response payload.
+func IsErrResponse(err error) bool {
+	_, v := err.(*ErrResponse)
+	return v
 }
 
 // FillFromMap fills out the struct from the map extracted out of the JSON response sent by the Facebook API.
