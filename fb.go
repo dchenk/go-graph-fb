@@ -121,7 +121,15 @@ func (er *ErrResponse) Error() string {
 
 // UserErrMessage summarizes the error in a way that can be displayed to users.
 func (er *ErrResponse) UserErrMessage() string {
-	return fmt.Sprintf("%s (error code %d, subcode %d): %s", er.ErrorUserTitle, er.Code, er.ErrorSubcode, er.ErrorUserMessage)
+	title := er.ErrorUserTitle
+	if title == "" { // Facebook sometimes returns no user title.
+		title = er.Type
+	}
+	msg := er.ErrorUserMessage
+	if msg == "" { // Facebook sometimes returns no user message.
+		msg = er.Message
+	}
+	return fmt.Sprintf("%s (error code %d, subcode %d): %s", title, er.Code, er.ErrorSubcode, msg)
 }
 
 // IsErrResponse says if the error is of type *ErrResponse, which Facebook can send as part of a response payload.
