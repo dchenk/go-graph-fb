@@ -43,6 +43,21 @@ type TokenDebug struct {
 	Error *ErrResponse `json:"error"` // nil if no error is given by FB; if nil, no Data will be sent
 }
 
+// DebugToken sends a token debug request to Facebook and reads the response.
+// If the client given is nil, then http.DefaultClient is used.
+func DebugToken(accessToken, tokenToDebug string, client *http.Client) (*TokenDebug, error) {
+	if client == nil {
+		client = http.DefaultClient
+	}
+	resp, err := client.Do(DebugTokenReq(accessToken, tokenToDebug))
+	if err != nil {
+		return nil, err
+	}
+	info := new(TokenDebug)
+	err = ReadResponse(resp, info)
+	return info, err
+}
+
 // DebugTokenReq sets up an http.Request for debugging a token.
 func DebugTokenReq(accessToken, tokenToDebug string) *http.Request {
 	return ReqSetup("GET", "debug_token", accessToken, nil, &ParamStrStr{"input_token", tokenToDebug})

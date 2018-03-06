@@ -10,7 +10,7 @@ import (
 // the default fields (if given nil) are given in the SystemUserList struct.
 func ListSystemUsersReq(adminToken, businessID string, fields []string) *http.Request {
 	if fields == nil {
-		fields = []string{"assigned_ad_accounts{name,account_id,role}", "assigned_pages{id,name,role,picture{url}}"}
+		fields = []string{"id", "name", "assigned_ad_accounts{name,account_id,role}", "assigned_pages{id,name,role,picture{url}}"}
 	}
 	return ReqSetup("GET", businessID+"/system_users", adminToken, fields)
 }
@@ -79,14 +79,14 @@ type AssignedPagesList struct {
 
 // InstallSystemUserAppReq installs an app for a system user. The appUserID must be an app-scoped system user iD, which
 // you can get with ListSystemUsersReq (adminToken must belong to an admin of the business or to an admin system user).
-func InstallSystemUserAppReq(adminToken, appID, appUserID string) *http.Request {
-	return ReqSetup("POST", appUserID+"/applications", adminToken, nil,
+func InstallSystemUserAppReq(adminAccessToken, appID, appUserID string) *http.Request {
+	return ReqSetup("POST", appUserID+"/applications", adminAccessToken, nil,
 		&ParamStrStr{"business_app", appID})
 }
 
 // InstallSystemUserAppResp represents the format of the response returned by the InstallSystemUserAppReq call.
 type InstallSystemUserAppResp struct {
-	Error *ErrResponse `json:"error"`
+	Error *ErrResponse `json:"error"` // nil if everything is good
 }
 
 type InstallSystemUserResponse bool      // TODO: correct? or wrapped somehow?

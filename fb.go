@@ -4,7 +4,6 @@ package fb
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -115,39 +114,20 @@ type ErrResponse struct {
 	FbTraceID        string `json:"fbtrace_id"`
 }
 
+// Error gives the main details of the error code and message.
+func (er *ErrResponse) Error() string {
+	return fmt.Sprintf("fb: error code %d, subcode %d; msg: %s", er.Code, er.ErrorSubcode, er.Message)
+}
+
+// UserErrMessage summarizes the error in a way that can be displayed to users.
+func (er *ErrResponse) UserErrMessage() string {
+	return fmt.Sprintf("%s (error code %d, subcode %d): %s", er.ErrorUserTitle, er.Code, er.ErrorSubcode, er.ErrorUserMessage)
+}
+
 // IsErrResponse says if the error is of type *ErrResponse, which Facebook can send as part of a response payload.
 func IsErrResponse(err error) bool {
 	_, v := err.(*ErrResponse)
 	return v
-}
-
-// FillFromMap fills out the struct from the map extracted out of the JSON response sent by the Facebook API.
-func (er *ErrResponse) fill(m map[string]interface{}) {
-	if v, ok := m["message"].(string); ok {
-		er.Message = v
-	}
-	if v, ok := m["type"].(string); ok {
-		er.Type = v
-	}
-	if v, ok := m["code"].(int64); ok {
-		er.Code = v
-	}
-	if v, ok := m["error_subcode"].(int64); ok {
-		er.ErrorSubcode = v
-	}
-	if v, ok := m["error_user_title"].(string); ok {
-		er.ErrorUserTitle = v
-	}
-	if v, ok := m["error_user_message"].(string); ok {
-		er.ErrorUserMessage = v
-	}
-	if v, ok := m["fbtrace_id"].(string); ok {
-		er.FbTraceID = v
-	}
-}
-
-func (er *ErrResponse) Error() string {
-	return fmt.Sprintf("fb: error code %d, subcode %d; msg: %s", er.Code, er.ErrorSubcode, er.Message)
 }
 
 // ReqSetup sets up a request to the Facebook API but does not begin it.
@@ -215,9 +195,7 @@ type ParamStrInt struct {
 
 func (psi *ParamStrInt) Key() string { return psi.K }
 
-func (psi *ParamStrInt) Val() string {
-	return strconv.FormatInt(psi.V, 10)
-}
+func (psi *ParamStrInt) Val() string { return strconv.FormatInt(psi.V, 10) }
 
 // encodeParams builds url.Values from the given Param elements. This function sets the access token parameter.
 func encodeParams(accessToken string, params []Param) string {
@@ -236,49 +214,4 @@ func ReadResponse(res *http.Response, v interface{}) error {
 	err := json.NewDecoder(res.Body).Decode(v)
 	res.Body.Close()
 	return err
-}
-
-// ReadResponseFill reads an *http.Response from a request into rf. The error returned is not nil if an only if something goes
-// wrong reading or decoding the response body (in which case the rf parameter passed in is not used at all). The *ErrResponse
-// is not nil if and only if the API response was read without problems (though it may have the "error" property not as a JSON
-// object and still set the error value to not nil) but there is an "error" property set in the JSON response. This function
-// calls the Fill method of rf to fill it out with the response data if there were no errors reading the response or no error
-// message returned by the Graph API body. This function closes the http.Response body upon returning.
-func ReadResponseFill(res *http.Response, rf RespFiller) (error, *ErrResponse) {
-
-	defer res.Body.Close()
-
-	bod := make(map[string]interface{})
-	if err := json.NewDecoder(res.Body).Decode(&bod); err != nil {
-		return fmt.Errorf("error decoding response: %s", err), nil
-	}
-
-	// Try to fill out an ErrResponse struct only if the Facebook API returned an error message in their special way.
-	if errResp, ok := bod["error"]; ok {
-		er := new(ErrResponse)
-		msi, ok := errResp.(map[string]interface{})
-		if ok {
-			er.fill(msi)
-		} else {
-			if str, ok := errResp.(string); ok {
-				er.Message = str
-			}
-			return errors.New("got an error response, but error value is not a JSON object; check ErrResponse.Message"), er
-		}
-		return nil, er
-	}
-
-	if rf != nil {
-		rf.Fill(bod)
-	}
-
-	return nil, nil
-
-}
-
-// A RespFiller is able to take any kind of Facebook Graph API response (as a map[string]interface{}) and extract the details it
-// wants out of it. When a RespFiller is passed into ReadResponse, its Fill method is called only if both no error occurred reading
-// and decoding the response body and if the response body does not have "error" as a property in the JSON object.
-type RespFiller interface {
-	Fill(map[string]interface{})
 }
