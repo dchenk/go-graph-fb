@@ -4,11 +4,15 @@ import (
 	"net/http"
 )
 
-// ListSystemUsersReq lists the system users and admin system users for the business (adminToken must belong
-// to an admin of the business or to an admin system user). The ID of each user returned is an app-scoped
-// user ID. Use the SystemUserList type for responses.
-func ListSystemUsersReq(adminToken, businessID string) *http.Request {
-	return ReqSetup("GET", businessID+"/system_users", adminToken, nil)
+// ListSystemUsersReq lists the system users and admin system users for the business (adminToken must belong to
+// an admin of the business or to an admin system user). The ID of each user returned is an app-scoped user ID.
+// Use the SystemUserList type for responses. The fields parameter specifies which fields to show for the users;
+// the default fields (if given nil) are given in the SystemUserList struct.
+func ListSystemUsersReq(adminToken, businessID string, fields []string) *http.Request {
+	if fields == nil {
+		fields = []string{"assigned_ad_accounts{name,account_id,role}", "assigned_pages{id,name,role,picture{url}}"}
+	}
+	return ReqSetup("GET", businessID+"/system_users", adminToken, fields)
 }
 
 // SystemUserList sample payload:
@@ -39,31 +43,50 @@ func ListSystemUsersReq(adminToken, businessID string) *http.Request {
 //	}
 type SystemUserList struct {
 	Data []struct {
-		ID                 string `json:"id"`
-		Name               string `json:"name"`
-		AssignedAdAccounts struct {
-			Data []struct {
-				ID        string `json:"id"`
-				AccountID string `json:"account_id"`
-				Role      string `json:"role"`
-			} `json:"data"`
-		} `json:"assigned_ad_accounts"`
-		AssignedPages struct {
-			Data []struct {
-				ID   string `json:"id"`
-				Role string `json:"role"`
-			} `json:"data"`
-		} `json:"assigned_pages"`
+		ID                 string                 `json:"id"`
+		Name               string                 `json:"name"`
+		AssignedAdAccounts AssignedAdAccountsList `json:"assigned_ad_accounts"`
+		AssignedPages      AssignedPagesList      `json:"assigned_pages"`
 	} `json:"data"`
 	Paging CursorPaging `json:"paging"`
 	Error  *ErrResponse `json:"error"` // nil if no error is given by FB
 }
 
-// InstallSystemUserAppReq installs an app for a system user. The appUserID must be an app-scoped system user iD,
-// which you can get with ListSystemUsersReq (adminToken must belong to an admin of the business or to an admin system user)
+type AssignedAdAccountsList struct {
+	Data []struct {
+		AccountID string `json:"account_id"`
+		Name      string `json:"name"`
+		Role      string `json:"role"`
+	} `json:"data"`
+	Paging CursorPaging `json:"paging"`
+	Error  *ErrResponse `json:"error"` // useful only when requesting list alone
+}
+
+type AssignedPagesList struct {
+	Data []struct {
+		ID      string `json:"id"`
+		Name    string `json:"name"`
+		Role    string `json:"role"`
+		Picture struct {
+			Data struct {
+				URL string `json:"url"`
+			} `json:"data"`
+		} `json:"picture"`
+	} `json:"data"`
+	Paging CursorPaging `json:"paging"`
+	Error  *ErrResponse `json:"error"` // useful only when requesting list alone
+}
+
+// InstallSystemUserAppReq installs an app for a system user. The appUserID must be an app-scoped system user iD, which
+// you can get with ListSystemUsersReq (adminToken must belong to an admin of the business or to an admin system user).
 func InstallSystemUserAppReq(adminToken, appID, appUserID string) *http.Request {
 	return ReqSetup("POST", appUserID+"/applications", adminToken, nil,
 		&ParamStrStr{"business_app", appID})
+}
+
+// InstallSystemUserAppResp represents the format of the response returned by the InstallSystemUserAppReq call.
+type InstallSystemUserAppResp struct {
+	Error *ErrResponse `json:"error"`
 }
 
 type InstallSystemUserResponse bool      // TODO: correct? or wrapped somehow?

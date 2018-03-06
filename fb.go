@@ -42,8 +42,8 @@ type WebhookNotif struct {
 		ChangedFields []string `json:"changed_fields"` // Fields include, e.g., for Page "leadgen", "location", "messages", etc.
 		Changes       []struct {
 			Field string          `json:"field"`
-			Value json.RawMessage `json:"changes"` // Not set for some endpoints.
-		}
+			Value json.RawMessage `json:"value"` // Not set for some endpoints.
+		} `json:"changes"`
 		Time int `json:"time"` // A Unix timestamp.
 	} `json:"entry"`
 }
@@ -56,6 +56,28 @@ type LeadGenEntry struct {
 	PageID      string `json:"page_id"`
 	AdgroupID   string `json:"adgroup_id"`
 	CreatedTime int64  `json:"created_time"`
+}
+
+// NextPage makes a request to nextURL using the given client. If Client is nil, then http.DefaultClient is used.
+func NextPage(nextURL string, client *http.Client) (*http.Response, error) {
+	u, err := url.Parse(nextURL)
+	if err != nil {
+		return nil, err
+	}
+	req := &http.Request{
+		Method:     "GET",
+		URL:        u,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		Header:     make(http.Header),
+		Body:       nil,
+		Host:       u.Host,
+	}
+	if client == nil {
+		client = http.DefaultClient
+	}
+	return client.Do(req)
 }
 
 type CursorPaging struct {
