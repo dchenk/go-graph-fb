@@ -33,7 +33,7 @@ var argFuncs = map[string]func(string){
 
 func me(accessToken string) {
 
-	resp, err := fb.Req("GET", "me", accessToken, nil)
+	resp, err := fb.ReqDo("GET", "me", accessToken, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func me(accessToken string) {
 
 func mePost(accessToken string) {
 
-	resp, err := fb.Req("POST", "me", accessToken, nil)
+	resp, err := fb.ReqDo("POST", "me", accessToken, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

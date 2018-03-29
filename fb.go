@@ -138,9 +138,10 @@ func IsErrResponse(err error) bool {
 	return v
 }
 
-// ReqSetup sets up a request to the Facebook API but does not begin it.
+// Req sets up a request to the Facebook API but does not run it. The method should one of GET, POST, or DELETE.
+// The nodeEdge parameter should not have a leading slash or the Graph API version (currently set to 2.12).
 // Leave the fields slice empty or nil to not specify a fields parameter.
-func ReqSetup(method, nodeEdge string, accessToken string, fields []string, params ...Param) *http.Request {
+func Req(method, nodeEdge string, accessToken string, fields []string, params ...Param) *http.Request {
 	r := &http.Request{
 		Method: method,
 		URL: &url.URL{
@@ -175,11 +176,9 @@ func ReqSetup(method, nodeEdge string, accessToken string, fields []string, para
 	return r
 }
 
-// Req uses ReqSetup to set up the request and then runs Do on it. The method parameter should be in all
-// capitals: GET, POST, or DELETE. The nodeEdge parameter should not have a leading slash or the Graph API
-// version (currently at 2.11). An access token must always be provided. The timeout is set to 10 seconds.
-func Req(method, nodeEdge string, accessToken string, fields []string, params ...Param) (*http.Response, error) {
-	return (&http.Client{Timeout: time.Second * 10}).Do(ReqSetup(method, nodeEdge, accessToken, fields, params...))
+// ReqDo uses Req to set up the request and then runs Do on it. The client request timeout is set to 12 seconds.
+func ReqDo(method, nodeEdge string, accessToken string, fields []string, params ...Param) (*http.Response, error) {
+	return (&http.Client{Timeout: time.Second * 12}).Do(Req(method, nodeEdge, accessToken, fields, params...))
 }
 
 // A Param is a key => value pair to be sent in the request.

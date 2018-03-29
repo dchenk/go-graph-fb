@@ -11,7 +11,7 @@ import (
 // CreateSystemTokenReq sets up an http.Request for getting a system user token.
 // Info: https://developers.facebook.com/docs/marketing-api/businessmanager/systemuser/#systemusertoken
 func CreateSystemTokenReq(userToken, systemUserID, appSecretProof, appID string, scope []string) *http.Request {
-	return ReqSetup("POST", systemUserID+"/access_tokens", userToken, nil,
+	return Req("POST", systemUserID+"/access_tokens", userToken, nil,
 		&ParamStrStr{"business_app", appID},
 		&ParamStrStr{"appsecret_proof", appSecretProof},
 		&ParamStrStr{"scope", strings.Join(scope, ",")})
@@ -60,7 +60,7 @@ func DebugToken(accessToken, tokenToDebug string, client *http.Client) (*TokenDe
 
 // DebugTokenReq sets up an http.Request for debugging a token.
 func DebugTokenReq(accessToken, tokenToDebug string) *http.Request {
-	return ReqSetup("GET", "debug_token", accessToken, nil, &ParamStrStr{"input_token", tokenToDebug})
+	return Req("GET", "debug_token", accessToken, nil, &ParamStrStr{"input_token", tokenToDebug})
 }
 
 // AppsecretProof generates an app secret proof for an app. The userAccessToken must belong to an admin of the app.
