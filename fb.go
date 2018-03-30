@@ -204,10 +204,13 @@ func (psi *ParamStrInt) Key() string { return psi.K }
 
 func (psi *ParamStrInt) Val() string { return strconv.FormatInt(psi.V, 10) }
 
-// encodeParams builds url.Values from the given Param elements. This function sets the access token parameter.
+// encodeParams builds url.Values from the given Param elements. This function sets the access token parameter
+// if it is given.
 func encodeParams(accessToken string, params []Param) string {
 	v := make(url.Values, len(params)+1)
-	v.Set("access_token", accessToken)
+	if accessToken != "" {
+		v.Set("access_token", accessToken)
+	}
 	for _, p := range params {
 		v.Set(p.Key(), p.Val())
 	}

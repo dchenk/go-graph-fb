@@ -8,6 +8,22 @@ import (
 	"strings"
 )
 
+func ExtendedUserAccessTokenReq(userToken, appID, appSecret string) *http.Request {
+	return Req("GET", "oauth/access_token", userToken, nil,
+		&ParamStrStr{"grant_type", "fb_exchange_token"},
+		&ParamStrStr{"client_id", appID},
+		&ParamStrStr{"client_secret", appSecret},
+		&ParamStrStr{"fb_exchange_token", userToken})
+}
+
+// A TokenResponse represents a response from Facebook containing a token.
+type TokenResponse struct {
+	AccessToken string       `json:"access_token"`
+	TokenType   string       `json:"token_type"`
+	ExpiresIn   int          `json:"expires_in"`
+	Error       *ErrResponse `json:"error"` // nil if no error is given
+}
+
 // CreateSystemTokenReq sets up an http.Request for getting a system user token.
 // Info: https://developers.facebook.com/docs/marketing-api/businessmanager/systemuser/#systemusertoken
 func CreateSystemTokenReq(userToken, systemUserID, appSecretProof, appID string, scope []string) *http.Request {
@@ -15,12 +31,6 @@ func CreateSystemTokenReq(userToken, systemUserID, appSecretProof, appID string,
 		&ParamStrStr{"business_app", appID},
 		&ParamStrStr{"appsecret_proof", appSecretProof},
 		&ParamStrStr{"scope", strings.Join(scope, ",")})
-}
-
-// A SystemToken is the format in which Facebook returns a system user token.
-type SystemToken struct {
-	AccessToken string       `json:"access_token"`
-	Error       *ErrResponse `json:"error"` // nil if no error is given by FB
 }
 
 // A TokenDebug represents a Facebook response for the token debugging API.
