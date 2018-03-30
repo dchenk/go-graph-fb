@@ -82,14 +82,3 @@ type AssignedPagesList struct {
 func InstallSystemUserAppReq(adminAccessToken, appID, appUserID string) *http.Request {
 	return Req("POST", appUserID+"/applications", adminAccessToken, nil, &ParamStrStr{"business_app", appID})
 }
-
-// InstallSystemUserAppResp represents the format of the response returned by the InstallSystemUserAppReq call.
-type InstallSystemUserAppResp struct {
-	Error *ErrResponse `json:"error"` // nil if everything is good
-}
-
-type InstallSystemUserResponse bool      // TODO: correct? or wrapped somehow?
-type InstallSystemUserResponse2 struct { // TODO: or this?
-	Data  bool         `json:"data"`
-	Error *ErrResponse `json:"error"` // nil if no error is given by FB
-}
