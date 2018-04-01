@@ -187,6 +187,7 @@ type Param interface {
 	Val() string
 }
 
+// A ParamStrStr contains key-value pair where both elements are strings.
 type ParamStrStr struct {
 	K, V string
 }
@@ -195,6 +196,7 @@ func (pss *ParamStrStr) Key() string { return pss.K }
 
 func (pss *ParamStrStr) Val() string { return pss.V }
 
+// A ParamStrInt contains key-value pair where the key is a string and the value an int64.
 type ParamStrInt struct {
 	K string
 	V int64
@@ -205,7 +207,7 @@ func (psi *ParamStrInt) Key() string { return psi.K }
 func (psi *ParamStrInt) Val() string { return strconv.FormatInt(psi.V, 10) }
 
 // encodeParams builds url.Values from the given Param elements. This function sets the access token parameter
-// if it is given.
+// if it is not empty.
 func encodeParams(accessToken string, params []Param) string {
 	v := make(url.Values, len(params)+1)
 	if accessToken != "" {
@@ -217,9 +219,9 @@ func encodeParams(accessToken string, params []Param) string {
 	return v.Encode()
 }
 
-// ReadResponse simply reads the response and decodes it into v, which should be a non-nil pointer to a struct that can take
-// an error response (in the Facebook Graph way) or the actual response expected. This function closes the http.Response body
-// upon returning.
+// ReadResponse simply reads the response and decodes it into v, which should be a non-nil pointer to a variable that
+// can take an error response (in the Facebook Graph way) or the actual response expected. This function closes the
+// http.Response body upon returning.
 func ReadResponse(res *http.Response, v interface{}) error {
 	err := json.NewDecoder(res.Body).Decode(v)
 	res.Body.Close()

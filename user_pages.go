@@ -6,7 +6,7 @@ import "net/http"
 type UserPagesList struct {
 	Data   []UserPage   `json:"data"`
 	Paging CursorPaging `json:"paging"`
-	Error  *ErrResponse `json:"error"` // nil if no error is given by FB
+	Error  *ErrResponse `json:"error"` // nil if no error is given
 }
 
 type UserPage struct {
@@ -44,4 +44,27 @@ func ListUserPagesFieldsReq(accessToken string, fields []string) *http.Request {
 // to the page must be used for this.
 func SubscribeAppToPageReq(pageAccessToken, pageID string) *http.Request {
 	return Req("POST", pageID+"/subscribed_apps", pageAccessToken, nil)
+}
+
+// A SubscribeAppResponse represents the format in which a response indicates if an app successfully subscribed to a page.
+type SubscribeAppResponse struct {
+	Success bool         `json:"success"`
+	Error   *ErrResponse `json:"error"` // nil if no error is given
+}
+
+// ListSubscribedPageApps returns a request to query the Facebook apps that are subscribed to a page's events.
+func ListSubscribedPageAppsReq(pageAccessToken, pageID string) *http.Request {
+	return Req("GET", pageID+"/subscribed_apps", pageAccessToken, nil)
+}
+
+// A SubscribedAppsList response represents the list of apps subscribed to a page.
+type SubscribedAppsList struct {
+	Data []struct {
+		Category string `json:"category"`
+		Link     string `json:"link"`
+		Name     string `json:"name"`
+		ID       string `json:"id"`
+	} `json:"data"`
+	Paging CursorPaging `json:"paging"`
+	Error  *ErrResponse `json:"error"` // nil if no error is given
 }
