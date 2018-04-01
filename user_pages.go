@@ -39,3 +39,9 @@ var listUserPagesFields = []string{"id", "name", "access_token", "category", "pe
 func ListUserPagesFieldsReq(accessToken string, fields []string) *http.Request {
 	return Req("GET", "me/accounts", accessToken, fields)
 }
+
+// SubscribeAppToPageReq returns a request that can be used to subscribe an app to a page. A page access token belonging
+// to the page must be used for this.
+func SubscribeAppToPageReq(pageAccessToken, pageID string) *http.Request {
+	return Req("POST", pageID+"/subscribed_apps", pageAccessToken, nil)
+}
