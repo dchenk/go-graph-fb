@@ -52,8 +52,8 @@ type SubscribeAppResponse struct {
 	Error   *ErrResponse `json:"error"` // nil if no error is given
 }
 
-// ListSubscribedPageApps returns a request to query the Facebook apps that are subscribed to a page's events.
-func ListSubscribedPageAppsReq(pageAccessToken, pageID string) *http.Request {
+// ListPageSubscribedAppsReq returns a request to query the Facebook apps that are subscribed to a page's events.
+func ListPageSubscribedAppsReq(pageAccessToken, pageID string) *http.Request {
 	return Req("GET", pageID+"/subscribed_apps", pageAccessToken, nil)
 }
 
@@ -67,4 +67,28 @@ type SubscribedAppsList struct {
 	} `json:"data"`
 	Paging CursorPaging `json:"paging"`
 	Error  *ErrResponse `json:"error"` // nil if no error is given
+}
+
+// PageLeadgenSetupReq returns a request to query the basic settings concerning a page's leadgen setup.
+// Fields retrieved: id,leadgen_has_crm_integration,leadgen_forms{id,name,status}
+func PageLeadgenSetupReq(pageAccessToken, pageID string) *http.Request {
+	return Req("GET", pageID, pageAccessToken, leadgenSetupFields)
+}
+
+var leadgenSetupFields = []string{"id", "leadgen_has_crm_integration", "leadgen_forms{id,name,status}"}
+
+type PageLeadgenSetup struct {
+	ID                       string `json:"id"` // The page ID
+	LeadgenHasCrmIntegration bool   `json:"leadgen_has_crm_integration"`
+	LeadgenForms             struct {
+		Data   []PageLeadgenForm `json:"data"`
+		Paging CursorPaging      `json:"paging"`
+	} `json:"leadgen_forms"`
+	Error *ErrResponse `json:"error"` // nil if no error is given
+}
+
+type PageLeadgenForm struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
 }
