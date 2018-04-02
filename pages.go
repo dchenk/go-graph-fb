@@ -70,15 +70,16 @@ type SubscribedAppsList struct {
 }
 
 // PageLeadgenSetupReq returns a request to query the basic settings concerning a page's leadgen setup.
-// Fields retrieved: id,leadgen_has_crm_integration,leadgen_forms{id,name,status}
+// Fields retrieved: id,name,leadgen_has_crm_integration,leadgen_forms{id,name,status}
 func PageLeadgenSetupReq(pageAccessToken, pageID string) *http.Request {
 	return Req("GET", pageID, pageAccessToken, leadgenSetupFields)
 }
 
-var leadgenSetupFields = []string{"id", "leadgen_has_crm_integration", "leadgen_forms{id,name,status}"}
+var leadgenSetupFields = []string{"id", "name", "leadgen_has_crm_integration", "leadgen_forms{id,name,status}"}
 
 type PageLeadgenSetup struct {
 	ID                       string `json:"id"` // The page ID
+	Name                     string `json:"name"`
 	LeadgenHasCrmIntegration bool   `json:"leadgen_has_crm_integration"`
 	LeadgenForms             struct {
 		Data   []PageLeadgenForm `json:"data"`
