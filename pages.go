@@ -93,3 +93,11 @@ type PageLeadgenForm struct {
 	Name   string `json:"name"`
 	Status string `json:"status"`
 }
+
+// A PageLeadgenFormList is used to read the response from a "next" page URL given to page through the list of
+// lead ads forms belonging to a page.
+type PageLeadgenFormList struct {
+	Data   []PageLeadgenForm `json:"data"`
+	Paging CursorPaging      `json:"paging"`
+	Error  *ErrResponse      `json:"error"`
+}
