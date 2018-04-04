@@ -1,0 +1,9 @@
+language: go
+
+go:
+  - 1.9.x
+  - 1.10.x
+
+env:
+  - GIMME_ARCH=amd64
+  - GIMME_ARCH=386

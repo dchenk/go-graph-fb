@@ -57,6 +57,25 @@ type LeadGenEntry struct {
 	CreatedTime int64  `json:"created_time"`
 }
 
+// MarshalJSON implements json.Marshaler for the LeadGenEntry type. This function always returns a nil error.
+func (le *LeadGenEntry) MarshalJSON() ([]byte, error) {
+	var b bytes.Buffer
+	b.WriteString(`{"ad_id":`)
+	b.WriteString(strconv.Quote(le.AdID))
+	b.WriteString(`,"form_id":`)
+	b.WriteString(strconv.Quote(le.FormID))
+	b.WriteString(`,"leadgen_id":`)
+	b.WriteString(strconv.Quote(le.LeadgenID))
+	b.WriteString(`,"page_id":`)
+	b.WriteString(strconv.Quote(le.PageID))
+	b.WriteString(`,"adgroup_id":`)
+	b.WriteString(strconv.Quote(le.AdgroupID))
+	b.WriteString(`,"created_time":`)
+	b.WriteString(strconv.FormatInt(le.CreatedTime, 10))
+	b.WriteByte('}')
+	return b.Bytes(), nil
+}
+
 // NextPage makes a request to nextURL using the given client. If Client is nil, then http.DefaultClient is used.
 func NextPage(nextURL string, client *http.Client) (*http.Response, error) {
 	u, err := url.Parse(nextURL)
