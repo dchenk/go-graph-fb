@@ -1,6 +1,10 @@
 package fb
 
-import "net/http"
+import (
+	"bytes"
+	"net/http"
+	"strconv"
+)
 
 // A UserPagesList response lists the pages belonging to a user.
 type UserPagesList struct {
@@ -109,6 +113,10 @@ func FormLeadsReq(pageAccessToken, formID string) *http.Request {
 
 var formLeadsFields = []string{"created_time", "id", "form_id", "field_data"}
 
+func FormLeadDataReq(pageAccessToken, leadID string) *http.Request {
+	return Req("GET", leadID, pageAccessToken, formLeadsFields)
+}
+
 // The FormLeadsList type represents a bulk read response of leads collected for a form.
 type FormLeadsList struct {
 	Data   []FormLead   `json:"data"`
@@ -123,4 +131,31 @@ type FormLead struct {
 		Name   string   `json:"name"`
 		Values []string `json:"values"`
 	} `json:"field_data"`
+}
+
+// EncodeJSON gives the JSON-encoded representation of the lead.
+func (fl *FormLead) EncodeJSON() []byte {
+	var b bytes.Buffer
+	b.WriteString(`{"created_time":`)
+	b.WriteString(strconv.Quote(fl.CreatedTime))
+	b.WriteString(`,"id":`)
+	b.WriteString(strconv.Quote(fl.ID))
+	b.WriteString(`,"field_data":[`)
+	for i := range fl.FieldData {
+		if i > 0 {
+			b.WriteByte(',')
+		}
+		b.WriteString(`{"name":`)
+		b.WriteString(strconv.Quote(fl.FieldData[i].Name))
+		b.WriteString(`,"values":[`)
+		for j, val := range fl.FieldData[i].Values {
+			if j > 0 {
+				b.WriteByte(',')
+			}
+			b.WriteString(strconv.Quote(val))
+		}
+		b.WriteString("]}")
+	}
+	b.WriteString("]}")
+	return b.Bytes()
 }
