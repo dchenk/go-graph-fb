@@ -88,16 +88,39 @@ type PageLeadgenSetup struct {
 	Error *ErrResponse `json:"error"` // nil if no error is given
 }
 
-type PageLeadgenForm struct {
-	ID     string `json:"id"`
-	Name   string `json:"name"`
-	Status string `json:"status"`
-}
-
 // A PageLeadgenFormList is used to read the response from a "next" page URL given to page through the list of
 // lead ads forms belonging to a page.
 type PageLeadgenFormList struct {
 	Data   []PageLeadgenForm `json:"data"`
 	Paging CursorPaging      `json:"paging"`
 	Error  *ErrResponse      `json:"error"`
+}
+
+type PageLeadgenForm struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Status string `json:"status"`
+}
+
+// Fields queried: created_time,id,form_id,field_data
+func FormLeadsReq(pageAccessToken, formID string) *http.Request {
+	return Req("GET", formID+"/leads", pageAccessToken, formLeadsFields)
+}
+
+var formLeadsFields = []string{"created_time", "id", "form_id", "field_data"}
+
+// The FormLeadsList type represents a bulk read response of leads collected for a form.
+type FormLeadsList struct {
+	Data   []FormLead   `json:"data"`
+	Paging CursorPaging `json:"paging"`
+	Error  *ErrResponse `json:"error"`
+}
+
+type FormLead struct {
+	CreatedTime string `json:"created_time"`
+	ID          string `json:"id"`
+	FieldData   []struct {
+		Name   string   `json:"name"`
+		Values []string `json:"values"`
+	} `json:"field_data"`
 }
