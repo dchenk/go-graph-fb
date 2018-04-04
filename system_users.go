@@ -12,7 +12,7 @@ func ListSystemUsersReq(adminToken, businessID string, fields []string) *http.Re
 	if fields == nil {
 		fields = []string{"id", "name", "assigned_ad_accounts{name,account_id,role}", "assigned_pages{id,name,role,picture{url}}"}
 	}
-	return Req("GET", businessID+"/system_users", adminToken, fields)
+	return Req(http.MethodGet, businessID+"/system_users", adminToken, fields)
 }
 
 // SystemUserList sample payload:
@@ -80,5 +80,5 @@ type AssignedPagesList struct {
 // InstallSystemUserAppReq installs an app for a system user. The appUserID must be an app-scoped system user iD, which
 // you can get with ListSystemUsersReq (adminToken must belong to an admin of the business or to an admin system user).
 func InstallSystemUserAppReq(adminAccessToken, appID, appUserID string) *http.Request {
-	return Req("POST", appUserID+"/applications", adminAccessToken, nil, &ParamStrStr{"business_app", appID})
+	return Req(http.MethodPost, appUserID+"/applications", adminAccessToken, nil, &ParamStrStr{"business_app", appID})
 }

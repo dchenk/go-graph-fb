@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/dchenk/go-graph-fb"
@@ -33,7 +34,7 @@ var argFuncs = map[string]func(string){
 
 func me(accessToken string) {
 
-	resp, err := fb.ReqDo("GET", "me", accessToken, nil)
+	resp, err := fb.ReqDo(http.MethodGet, "me", accessToken, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func me(accessToken string) {
 
 func mePost(accessToken string) {
 
-	resp, err := fb.ReqDo("POST", "me", accessToken, nil)
+	resp, err := fb.ReqDo(http.MethodPost, "me", accessToken, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

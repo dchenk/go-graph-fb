@@ -41,13 +41,13 @@ var listUserPagesFields = []string{"id", "name", "access_token", "category", "pe
 // ListUserPagesFieldsReq lists the pages belonging to a user using a user access token with
 // the specified fields.
 func ListUserPagesFieldsReq(accessToken string, fields []string) *http.Request {
-	return Req("GET", "me/accounts", accessToken, fields)
+	return Req(http.MethodGet, "me/accounts", accessToken, fields)
 }
 
 // SubscribeAppToPageReq returns a request that can be used to subscribe an app to a page. A page access token belonging
 // to the page must be used for this.
 func SubscribeAppToPageReq(pageAccessToken, pageID string) *http.Request {
-	return Req("POST", pageID+"/subscribed_apps", pageAccessToken, nil)
+	return Req(http.MethodPost, pageID+"/subscribed_apps", pageAccessToken, nil)
 }
 
 // A SubscribeAppResponse represents the format in which a response indicates if an app successfully subscribed to a page.
@@ -58,7 +58,7 @@ type SubscribeAppResponse struct {
 
 // ListPageSubscribedAppsReq returns a request to query the Facebook apps that are subscribed to a page's events.
 func ListPageSubscribedAppsReq(pageAccessToken, pageID string) *http.Request {
-	return Req("GET", pageID+"/subscribed_apps", pageAccessToken, nil)
+	return Req(http.MethodGet, pageID+"/subscribed_apps", pageAccessToken, nil)
 }
 
 // A SubscribedAppsList response represents the list of apps subscribed to a page.
@@ -76,7 +76,7 @@ type SubscribedAppsList struct {
 // PageLeadgenSetupReq returns a request to query the basic settings concerning a page's leadgen setup.
 // Fields retrieved: id,name,leadgen_has_crm_integration,leadgen_forms{id,name,status}
 func PageLeadgenSetupReq(pageAccessToken, pageID string) *http.Request {
-	return Req("GET", pageID, pageAccessToken, leadgenSetupFields)
+	return Req(http.MethodGet, pageID, pageAccessToken, leadgenSetupFields)
 }
 
 var leadgenSetupFields = []string{"id", "name", "leadgen_has_crm_integration", "leadgen_forms{id,name,status}"}
@@ -108,13 +108,13 @@ type PageLeadgenForm struct {
 
 // Fields queried: created_time,id,form_id,field_data
 func FormLeadsReq(pageAccessToken, formID string) *http.Request {
-	return Req("GET", formID+"/leads", pageAccessToken, formLeadsFields)
+	return Req(http.MethodGet, formID+"/leads", pageAccessToken, formLeadsFields)
 }
 
 var formLeadsFields = []string{"created_time", "id", "form_id", "field_data"}
 
 func FormLeadDataReq(pageAccessToken, leadID string) *http.Request {
-	return Req("GET", leadID, pageAccessToken, leadDataFields)
+	return Req(http.MethodGet, leadID, pageAccessToken, leadDataFields)
 }
 
 var leadDataFields = []string{"created_time", "id", "form_id", "field_data"}

@@ -83,7 +83,7 @@ func NextPage(nextURL string, client *http.Client) (*http.Response, error) {
 		return nil, err
 	}
 	req := &http.Request{
-		Method:     "GET",
+		Method:     http.MethodGet,
 		URL:        u,
 		Proto:      "HTTP/1.1",
 		ProtoMajor: 1,
@@ -179,7 +179,7 @@ func Req(method, nodeEdge string, accessToken string, fields []string, params ..
 			V: strings.Join(fields, ","),
 		})
 	}
-	if method == "POST" {
+	if method == http.MethodPost {
 		r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		b := new(bytes.Buffer)
 		b.WriteString(encodeParams(accessToken, params))

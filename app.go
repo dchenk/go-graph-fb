@@ -3,7 +3,7 @@ package fb
 import "net/http"
 
 func ListAppSubscriptionsReq(appAccessToken, appID string) *http.Request {
-	return Req("GET", appID+"/subscriptions", appAccessToken, nil)
+	return Req(http.MethodGet, appID+"/subscriptions", appAccessToken, nil)
 }
 
 type AppSubscriptionsList struct {
@@ -17,4 +17,9 @@ type AppSubscriptionsList struct {
 		} `json:"fields"`
 	} `json:"data"`
 	Error *ErrResponse `json:"error"`
+}
+
+// UnsubscribeFromPageReq unsubscribes the app from notifications for the page.
+func UnsubscribeFromPageReq(appAccessToken, pageID string) *http.Request {
+	return Req(http.MethodDelete, pageID+"/subscribed_apps", appAccessToken, nil)
 }
