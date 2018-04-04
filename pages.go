@@ -133,8 +133,9 @@ type FormLead struct {
 	} `json:"field_data"`
 }
 
-// EncodeJSON gives the JSON-encoded representation of the lead.
-func (fl *FormLead) EncodeJSON() []byte {
+// MarshalJSON gives the JSON-encoded representation of the lead. This function never returns
+// a non-nil error. This function implements encoding/json.Marshaler.
+func (fl *FormLead) MarshalJSON() ([]byte, error) {
 	var b bytes.Buffer
 	b.WriteString(`{"created_time":`)
 	b.WriteString(strconv.Quote(fl.CreatedTime))
@@ -157,5 +158,5 @@ func (fl *FormLead) EncodeJSON() []byte {
 		b.WriteString("]}")
 	}
 	b.WriteString("]}")
-	return b.Bytes()
+	return b.Bytes(), nil
 }

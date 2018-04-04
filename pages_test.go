@@ -16,8 +16,8 @@ func TestFormLead_EncodeJSON(t *testing.T) {
 				CreatedTime: "12345",
 				ID:          "2342342342",
 				FieldData: []struct {
-					Name   string
-					Values []string
+					Name   string   `json:"name"`
+					Values []string `json:"values"`
 				}{
 					{"a", []string{"b"}},
 					{"c", []string{"d", "e"}},
@@ -27,7 +27,12 @@ func TestFormLead_EncodeJSON(t *testing.T) {
 		},
 	}
 	for i, lead := range leads {
-		encoded := string(lead.Lead.EncodeJSON())
+		b, err := lead.Lead.MarshalJSON()
+		if err != nil {
+			// There must never be an error.
+			t.Fatalf("got an error encoding: %v", err)
+		}
+		encoded := string(b)
 		if encoded != lead.JSON {
 			t.Errorf("failed encoding text index %d; got %v", i, encoded)
 		}
