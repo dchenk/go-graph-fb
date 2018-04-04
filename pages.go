@@ -114,8 +114,10 @@ func FormLeadsReq(pageAccessToken, formID string) *http.Request {
 var formLeadsFields = []string{"created_time", "id", "form_id", "field_data"}
 
 func FormLeadDataReq(pageAccessToken, leadID string) *http.Request {
-	return Req("GET", leadID, pageAccessToken, formLeadsFields)
+	return Req("GET", leadID, pageAccessToken, leadDataFields)
 }
+
+var leadDataFields = []string{"created_time", "id", "form_id", "field_data"}
 
 // The FormLeadsList type represents a bulk read response of leads collected for a form.
 type FormLeadsList struct {
@@ -131,6 +133,7 @@ type FormLead struct {
 		Name   string   `json:"name"`
 		Values []string `json:"values"`
 	} `json:"field_data"`
+	Error *ErrResponse `json:"error"`
 }
 
 // MarshalJSON implements json.Marshaler for the FormLead type. This function always returns a nil error.
